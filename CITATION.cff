@@ -1,0 +1,13 @@
+cff-version: 1.2.0
+message: "Please cite the accompanying paper and the original data/model sources."
+title: "NuCLR Applications Data: Radii and Collectivity"
+type: dataset
+authors:
+  - family-names: Giacalone
+    given-names: Giuliano
+  - family-names: Trifinopoulos
+    given-names: Sokratis
+  - family-names: Williams
+    given-names: Michael
+version: 0.1.0
+repository-code: "https://github.com/strifinopoulos/NuCLR-applications-data"

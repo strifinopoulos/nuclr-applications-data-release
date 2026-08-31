@@ -1,0 +1,7 @@
+z,n,a,radius,radius_unc,delta_r2,delta_r2_stat_unc,delta_r2_sys_unc,reference_a,reference_radius,reference_radius_unc,source_key,doi,training_status
+20,16,36,3.44930453,0.00427962,-0.1960,0.0210,0.0160,40,3.4776,0.0019,Miller2019,10.1038/s41567-019-0416-9,absent_from_training_table
+20,17,37,3.44799968,0.00380537,-0.2050,0.0150,0.0170,40,3.4776,0.0019,Miller2019,10.1038/s41567-019-0416-9,absent_from_training_table
+20,18,38,3.46612201,0.00211779,-0.0797,0.0011,0.0063,40,3.4776,0.0019,Miller2019,10.1038/s41567-019-0416-9,absent_from_training_table
+20,29,49,3.49166175,0.00261952,0.0980,0.0040,0.0120,40,3.4776,0.0019,GarciaRuiz2016,10.1038/nphys3645,absent_from_training_table
+20,31,51,3.53351125,0.00265720,0.3920,0.0030,0.0130,40,3.4776,0.0019,GarciaRuiz2016,10.1038/nphys3645,absent_from_training_table
+20,32,52,3.55312563,0.00289979,0.5310,0.0050,0.0150,40,3.4776,0.0019,GarciaRuiz2016,10.1038/nphys3645,absent_from_training_table
