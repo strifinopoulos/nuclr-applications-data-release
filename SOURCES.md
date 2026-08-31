@@ -16,6 +16,9 @@
   table used in the campaign. Cite B. Pritychenko et al., *Atomic Data and
   Nuclear Data Tables* **107**, 1 (2016),
   [doi:10.1016/j.adt.2015.10.001](https://doi.org/10.1016/j.adt.2015.10.001).
+  The frozen source encodes the `146Sm` lower uncertainty with a minus sign;
+  the standardized `training_measurement_unc_e2_b2` column reports its
+  positive magnitude.
 
 ## External Measurements
 
@@ -55,4 +58,3 @@ predictions and interval semantics are defined in the manuscript and summarized
 in `README.md`. The target-only STL tables are reference OOF campaigns; the
 `B(E2)` STL campaign predates the final stratified, weighted MTL protocol and is
 not a strictly matched ablation.
-

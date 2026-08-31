@@ -3,8 +3,10 @@
 Data release for *Learning Nuclear Structure with AI: Radii and Collectivity*.
 
 This repository is private staging material. It is intended to be made public
-with the manuscript submission. It contains data tables only; model-training
-and figure-generation code are maintained separately.
+with the manuscript submission. It contains the frozen data and predictions,
+the exact uncertainty-analysis splits, and a compact reproduction package for
+the post-hoc interval analysis and manuscript chain figures. NuCLR training
+code and checkpoints are not included.
 
 ## Contents
 
@@ -19,6 +21,14 @@ and figure-generation code are maintained separately.
 | `models/5dch_predictions.csv` | Standardized 5DCH charge-radius and downward-`B(E2)` predictions. |
 | `models/bskg3_predictions.csv` | Standardized BSkG3 charge radii, deformations, and derived downward-`B(E2)` values. |
 | `inputs/` | Frozen input tables used by the campaigns. |
+| `inputs/uncertainty_oof_residuals.csv` | Exact measured-target OOF centers and measurements used to fit the residual-scale models. |
+| `splits/random_folds.csv` | Exact five repeated random five-fold assignments. |
+| `splits/regional_folds.csv` | Exact three repeated regional five-fold assignments. |
+| `scripts/reproduce_uncertainty.py` | Refits the interval GBMs and verifies widths and diagnostics. |
+| `scripts/reproduce_figures.py` | Recreates the manuscript chain-plot data series. |
+| `scripts/verify_release.py` | Verifies checksums, row semantics, and MTL/STL OOF RMS values. |
+| `scripts/update_manifest.py` | Regenerates release checksums after an intentional source change. |
+| `REPRODUCIBILITY.md` | Environment, commands, scope, and limitations. |
 | `MANIFEST.csv` | Row counts, byte sizes, and SHA-256 checksums. |
 
 ## Prediction Semantics
@@ -51,9 +61,25 @@ interval half-width.
 
 See [SOURCES.md](SOURCES.md) for provenance, conversions, and citations.
 
+## Reproduction
+
+Install the pinned dependencies and run both public analysis scripts:
+
+```bash
+python -m pip install -r requirements.txt
+python scripts/verify_release.py
+python scripts/reproduce_uncertainty.py
+python scripts/reproduce_figures.py
+```
+
+The uncertainty command refits 230 GBMs and checks its outputs against both
+the aggregate validation table and every released interval width. See
+[REPRODUCIBILITY.md](REPRODUCIBILITY.md) for the precise scope: this reproduces
+the analysis from frozen OOF predictions onward, not NuCLR neural-network
+training.
+
 ## Citation
 
 Until the accompanying paper has a final citation or DOI, cite this repository
 using [CITATION.cff](CITATION.cff) and cite the original experimental and
 nuclear-model sources listed in [SOURCES.md](SOURCES.md).
-
