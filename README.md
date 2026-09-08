@@ -71,7 +71,7 @@ Install the pinned dependencies and run:
 python -m pip install -r requirements.txt
 python scripts/verify_release.py
 python scripts/reproduce_uncertainty.py
-python scripts/reproduce_figures.py
+python scripts/reproduce_figures.py --output-dir reproduced/figures
 ```
 
 The uncertainty script refits the residual-scale GBMs and checks the reported
@@ -86,9 +86,30 @@ nuclei receive the median width from all 100 fits. The script checks the
 released widths, random-fold coverage, local calibration, and regional
 diagnostics against `tables/uncertainty_validation.csv`.
 
-The figure script reproduces the numerical chain-plot series, including each
-model's subtraction at the stated reference isotope, and writes standalone
-PNGs with the manuscript asset names.
+### Figure outputs
+
+The figure script reproduces the numerical content of the current manuscript
+chain plots and writes these standalone PNGs:
+
+| Output | Chains | Reference neutron numbers |
+|---|---|---|
+| `paper_radii_main_gbm.png` | Ni, Sm, Pb | 33, 84, 116 |
+| `paper_be2_main_gbm_main_new.png` | Sm, Po, U | 82, 118, 142 |
+| `appendix_radii_other_a_gbm.png` | Ca, Sn, Hg | 24, 70, 113 |
+| `appendix_be2_other_a_gbm_main_new.png` | Zr, Sn, Xe, Th | 54, 68, 74, 138 |
+| `radii_Pm_cv_uncertainty_gbm.png` | Pm | 86 |
+
+For each lower chain panel, the reference is the central measured isotope.
+NuCLR, 5DCH, and BSkG3 are each subtracted by their own value at the same
+`N_ref`; a baseline value is linearly interpolated when that isotope is not
+tabulated. Nuclear-model curves are restricted to the released NuCLR chain
+range. Filled NuCLR squares are measured-target OOF predictions, open squares
+are full-ensemble predictions at unmeasured targets, and the error bars are the
+released 68% intervals. The Pm panel instead aligns the isotope-shift data and
+BSkG3 curve at `N_ref = 86`.
+
+The generated files reproduce the plotted data and reference convention.
+Fonts and rasterization can vary slightly with the local Matplotlib version.
 
 ## Citation
 

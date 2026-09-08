@@ -323,8 +323,15 @@ def promethium_figure(output: Path, radii: pd.DataFrame, bskg3: pd.DataFrame) ->
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--output-dir", type=Path, default=ROOT / "reproduced" / "figures")
+    parser = argparse.ArgumentParser(
+        description="Reproduce the manuscript chain plots from the released tables."
+    )
+    parser.add_argument(
+        "--output-dir",
+        type=Path,
+        default=ROOT / "reproduced" / "figures",
+        help="directory for the five manuscript-named PNG files",
+    )
     args = parser.parse_args()
     args.output_dir.mkdir(parents=True, exist_ok=True)
     style()
