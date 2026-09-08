@@ -12,7 +12,7 @@ OOF predictions and does not reproduce neural-network training or checkpoints.
 | Path | Description |
 |---|---|
 | `tables/nuclr_charge_radii.csv` | NuCLR charge-radius predictions for 3,231 nuclei, adopted training measurements, external calcium measurements, and 68%/95% interval columns. |
-| `tables/nuclr_be2.csv` | NuCLR downward `B(E2; 2+ -> 0+)` predictions for 831 nuclei with a `0+` ground state (809 even-even and 22 odd-odd), with measurements and interval columns. |
+| `tables/nuclr_be2.csv` | NuCLR downward `B(E2; 2+ -> 0+)` predictions for 830 nuclei with a `0+` ground state (808 even-even and 22 odd-odd), with measurements and interval columns. |
 | `tables/stl_charge_radii_oof.csv` | Measured-target OOF predictions from the target-only radius reference campaign. |
 | `tables/stl_be2_oof.csv` | Measured-target OOF predictions from the target-only `B(E2)` reference campaign. |
 | `tables/promethium_isotope_shifts.csv` | Published `143-147Pm` isotope shifts and the aligned NuCLR comparison used in the supplement. |
@@ -43,10 +43,17 @@ residual scale learned at measured nuclei with similar structural features;
 they are not assigned nominal coverage. `B(E2)` lower endpoints are intersected
 with the physical support `B(E2) >= 0`.
 
-The measured `B(E2)` set contains 433 nuclei with a `0+` ground state: 428
-even-even nuclei and five odd-odd nuclei. The released prediction grid contains
+The released measured `B(E2)` set contains 432 nuclei with a `0+` ground state:
+427 even-even nuclei and five odd-odd nuclei. The released prediction grid contains
 no odd-A, `1/2+` rows because those rows do not represent a
 `B(E2; 2+ -> 0+)` transition.
+
+The frozen campaign used an additional `98Zr` target whose LiveChart extraction
+selected the branch to an excited `0+` state rather than the ground-state
+branch. Because the released ensemble was not retrained after that source issue
+was identified, `98Zr` is excluded from the derived prediction, residual,
+validation-split, STL-comparison, and figure tables. The complete frozen
+LiveChart source extract remains in `inputs/iaea_livechart_gammas.csv`.
 
 `nuclr_seed_std_*` records the spread of the corresponding central-prediction
 ensemble. It is diagnostic information and is not added to the calibrated
@@ -59,7 +66,7 @@ interval half-width.
 - `training_measurement_*` contains the target table used by NuCLR.
 - The six calcium measurements in `external_measurement_*` were absent from
   the frozen training table and are retained separately as external data.
-- The frozen sources do not report a usable uncertainty for 27 of the 433
+- The frozen sources do not report a usable uncertainty for 26 of the 432
   measured `B(E2)` targets; their `training_measurement_unc_e2_b2` fields are
   therefore blank. Source values are retained as reported rather than removed
   by an undocumented plausibility filter.
