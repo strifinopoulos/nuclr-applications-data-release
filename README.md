@@ -59,6 +59,10 @@ interval half-width.
 - `training_measurement_*` contains the target table used by NuCLR.
 - The six calcium measurements in `external_measurement_*` were absent from
   the frozen training table and are retained separately as external data.
+- The frozen sources do not report a usable uncertainty for 27 of the 433
+  measured `B(E2)` targets; their `training_measurement_unc_e2_b2` fields are
+  therefore blank. Source values are retained as reported rather than removed
+  by an undocumented plausibility filter.
 - Blank CSV fields mean that the quantity is unavailable for that nucleus.
 
 See [SOURCES.md](SOURCES.md) for provenance, conversions, and citations.

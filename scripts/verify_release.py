@@ -13,9 +13,9 @@ import pandas as pd
 ROOT = Path(__file__).resolve().parents[1]
 EXPECTED = {
     "charge_radius_mtl_oof_rms": 0.014671871877824877,
-    "be2_mtl_oof_rms": 0.19225707158320973,
+    "be2_mtl_oof_rms": 0.19227271031996152,
     "charge_radius_stl_oof_rms": 0.07600884500180767,
-    "be2_stl_oof_rms": 0.29518664461384264,
+    "be2_stl_oof_rms": 0.2951787848802326,
 }
 
 
@@ -37,6 +37,56 @@ def verify_manifest() -> None:
             failures.append(f"checksum: {row.path}")
     if failures:
         raise RuntimeError("Manifest verification failed: " + ", ".join(failures))
+
+
+def verify_livechart_be2_targets(be2_table: pd.DataFrame) -> None:
+    """Check the 25 targets sourced from LiveChart against the intended branch."""
+    nndc = pd.read_csv(ROOT / "inputs" / "nndc_adopted_be2.csv")
+    nndc_keys = set(zip(nndc["z"], nndc["n"]))
+    measured = be2_table[be2_table["training_measurement_e2_b2"].notna()].copy()
+    livechart_targets = measured[
+        ~pd.MultiIndex.from_frame(measured[["z", "n"]]).isin(nndc_keys)
+    ]
+    if len(livechart_targets) != 25:
+        raise RuntimeError(
+            f"Expected 25 LiveChart-derived B(E2) targets, found {len(livechart_targets)}."
+        )
+
+    gammas = pd.read_csv(ROOT / "inputs" / "iaea_livechart_gammas.csv")
+    normalized_start_jp = gammas["start_level_jp"].str.replace(
+        r"[()]", "", regex=True
+    )
+    candidates = gammas[
+        normalized_start_jp.eq("2+")
+        & gammas["end_level_jp"].eq("0+")
+        & gammas["end_level_energy"].eq(0)
+        & gammas["b_e2"].notna()
+    ].copy()
+    candidates = candidates.sort_values("start_level_energy").drop_duplicates(
+        ["z", "n"], keep="first"
+    )
+    comparison = livechart_targets.merge(
+        candidates[["z", "n", "b_e2"]], on=["z", "n"], how="left", validate="one_to_one"
+    )
+    if comparison["b_e2"].isna().any():
+        missing = comparison.loc[comparison["b_e2"].isna(), ["z", "n"]].to_dict(
+            "records"
+        )
+        raise RuntimeError(f"Missing LiveChart ground-state transitions: {missing}")
+    converted = comparison["b_e2"] * 0.0594 * comparison["a"] ** (4.0 / 3.0) * 1.0e-4
+    if not np.allclose(
+        comparison["training_measurement_e2_b2"], converted, rtol=0.0, atol=1.0e-10
+    ):
+        bad = comparison.loc[
+            ~np.isclose(
+                comparison["training_measurement_e2_b2"],
+                converted,
+                rtol=0.0,
+                atol=1.0e-10,
+            ),
+            ["z", "n"],
+        ].to_dict("records")
+        raise RuntimeError(f"LiveChart B(E2) branch/conversion mismatch: {bad}")
 
 
 def main() -> None:
@@ -62,6 +112,7 @@ def main() -> None:
 
     radii = pd.read_csv(ROOT / "tables" / "nuclr_charge_radii.csv")
     be2_table = pd.read_csv(ROOT / "tables" / "nuclr_be2.csv")
+    verify_livechart_be2_targets(be2_table)
     counts = {
         "charge_radius_rows": int(len(radii)),
         "charge_radius_measured_oof_rows": int(
@@ -100,9 +151,29 @@ def main() -> None:
     }
     if composition != {"even_even": 809, "odd_odd": 22}:
         raise RuntimeError(f"B(E2) support composition changed: {composition}")
+    measured_be2 = be2_table[be2_table["training_measurement_e2_b2"].notna()]
+    even_even_measured = measured_be2[
+        measured_be2["z"].mod(2).eq(0) & measured_be2["n"].mod(2).eq(0)
+    ]
+
+    def multiplicative_tail(frame: pd.DataFrame) -> float:
+        ratio = frame["nuclr_prediction_e2_b2"] / frame["training_measurement_e2_b2"]
+        return float(np.exp(np.quantile(np.abs(np.log(ratio)), 0.95)))
+
+    tail_diagnostics = {
+        "be2_all_433_multiplicative_95pct": multiplicative_tail(measured_be2),
+        "be2_even_even_428_multiplicative_95pct": multiplicative_tail(
+            even_even_measured
+        ),
+    }
     print(
         json.dumps(
-            {"rms": actual, "counts": counts, "be2_composition": composition},
+            {
+                "rms": actual,
+                "counts": counts,
+                "be2_composition": composition,
+                "tail_diagnostics": tail_diagnostics,
+            },
             indent=2,
         )
     )

@@ -22,9 +22,10 @@
   For the 408 retained nuclei covered by this table, the tabulated upward
   strengths and uncertainties are divided by five to obtain downward
   `B(E2; 2+ -> 0+)` values.
-- The remaining 25 training targets use the lowest first-`2+ -> 0+` transition
-  available in `inputs/iaea_livechart_gammas.csv`. LiveChart strengths in
-  Weisskopf units are converted with
+- The remaining 25 training targets use the transition from the lowest listed
+  first-`2+` level (including tentative `(2+)` assignments) to the `0+` ground
+  state (`end_level_energy = 0`) in `inputs/iaea_livechart_gammas.csv`.
+  LiveChart strengths in Weisskopf units are converted with
   `B(E2) [e^2 b^2] = B(E2) [W.u.] * 0.0594 * A^(4/3) * 1e-4`.
   The complete released target set contains 428 even-even and five odd-odd
   nuclei, all with `0+` ground states.
@@ -55,9 +56,10 @@
   accompanying G. Grams et al., *European Physical Journal A* **59**, 270
   (2023),
   [doi:10.1140/epja/s10050-023-01158-6](https://doi.org/10.1140/epja/s10050-023-01158-6).
-  Charge radii are direct table entries. The downward `B(E2)` values are
-  rigid-rotor estimates derived from the tabulated `beta2`; the source
-  upward-transition table is divided by five.
+  Charge radii are direct table entries. The downward `B(E2; 2+ -> 0+)` values
+  are computed directly from the tabulated `beta2` using the rigid-rotor
+  relation stated in the manuscript; they are not transcribed from a source
+  transition-strength table.
 
 ## NuCLR Tables
 

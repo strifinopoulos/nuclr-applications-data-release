@@ -16,6 +16,8 @@ def included(path: Path) -> bool:
     return (
         path.is_file()
         and path.name != "MANIFEST.csv"
+        and "__pycache__" not in relative.parts
+        and path.suffix.lower() not in {".pyc", ".pyo"}
         and relative.parts[0] not in EXCLUDED_TOP_LEVEL
         and not relative.parts[0].startswith("tmp_")
     )
@@ -39,7 +41,9 @@ def main() -> None:
         )
     with (ROOT / "MANIFEST.csv").open("w", newline="", encoding="utf-8") as handle:
         writer = csv.DictWriter(
-            handle, fieldnames=["path", "bytes", "data_rows", "sha256"]
+            handle,
+            fieldnames=["path", "bytes", "data_rows", "sha256"],
+            lineterminator="\n",
         )
         writer.writeheader()
         writer.writerows(rows)

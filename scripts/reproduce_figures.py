@@ -127,7 +127,7 @@ def plot_chain(
         color=COLORS["nuclr"],
         capsize=1.7,
         lw=0.75,
-        label="NuCLR (OOF)",
+        label="NuCLR",
         zorder=4,
     )
     top.errorbar(
@@ -146,7 +146,7 @@ def plot_chain(
         ecolor=COLORS["nuclr"],
         capsize=1.7,
         lw=0.75,
-        label="NuCLR (open)",
+        label="NuCLR (extrapolated)",
         zorder=3,
     )
 
@@ -292,7 +292,7 @@ def promethium_figure(output: Path, radii: pd.DataFrame, bskg3: pd.DataFrame) ->
         ecolor=COLORS["nuclr"],
         capsize=1.8,
         lw=0.75,
-        label="NuCLR (open)",
+        label="NuCLR (extrapolated)",
     )
     ax.plot(
         model["n"], model["aligned"], color=COLORS["bskg3"], linestyle="-.",
