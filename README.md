@@ -4,14 +4,15 @@ Data release for *Learning Nuclear Structure with AI: Radii and Collectivity*.
 
 This repository contains the frozen data and predictions, the exact
 uncertainty-analysis splits, and the scripts used to reproduce the reported
-post-hoc interval diagnostics and chain figures.
+post-hoc interval diagnostics and chain figures. It starts from frozen NuCLR
+OOF predictions and does not reproduce neural-network training or checkpoints.
 
 ## Contents
 
 | Path | Description |
 |---|---|
 | `tables/nuclr_charge_radii.csv` | NuCLR charge-radius predictions for 3,231 nuclei, adopted training measurements, external calcium measurements, and 68%/95% interval columns. |
-| `tables/nuclr_be2.csv` | NuCLR downward `B(E2; 2+ -> 0+)` predictions for the 991 nuclei in the prediction table with a `0+` ground state, with measurements and interval columns. |
+| `tables/nuclr_be2.csv` | NuCLR downward `B(E2; 2+ -> 0+)` predictions for 831 nuclei with a `0+` ground state (809 even-even and 22 odd-odd), with measurements and interval columns. |
 | `tables/stl_charge_radii_oof.csv` | Measured-target OOF predictions from the target-only radius reference campaign. |
 | `tables/stl_be2_oof.csv` | Measured-target OOF predictions from the target-only `B(E2)` reference campaign. |
 | `tables/promethium_isotope_shifts.csv` | Published `143-147Pm` isotope shifts and the aligned NuCLR comparison used in the supplement. |
@@ -41,6 +42,11 @@ is tested empirically. For unmeasured targets, the widths transfer the OOF
 residual scale learned at measured nuclei with similar structural features;
 they are not assigned nominal coverage. `B(E2)` lower endpoints are intersected
 with the physical support `B(E2) >= 0`.
+
+The measured `B(E2)` set contains 433 nuclei with a `0+` ground state: 428
+even-even nuclei and five odd-odd nuclei. The released prediction grid contains
+no odd-A, `1/2+` rows because those rows do not represent a
+`B(E2; 2+ -> 0+)` transition.
 
 `nuclr_seed_std_*` records the spread of the corresponding central-prediction
 ensemble. It is diagnostic information and is not added to the calibrated
@@ -80,8 +86,9 @@ nuclei receive the median width from all 100 fits. The script checks the
 released widths, random-fold coverage, local calibration, and regional
 diagnostics against `tables/uncertainty_validation.csv`.
 
-The figure script reproduces the numerical chain-plot series and writes
-standalone PNGs with the manuscript asset names.
+The figure script reproduces the numerical chain-plot series, including each
+model's subtraction at the stated reference isotope, and writes standalone
+PNGs with the manuscript asset names.
 
 ## Citation
 

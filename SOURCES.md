@@ -19,6 +19,15 @@
   The frozen source encodes the `146Sm` lower uncertainty with a minus sign;
   the standardized `training_measurement_unc_e2_b2` column reports its
   positive magnitude.
+  For the 408 retained nuclei covered by this table, the tabulated upward
+  strengths and uncertainties are divided by five to obtain downward
+  `B(E2; 2+ -> 0+)` values.
+- The remaining 25 training targets use the lowest first-`2+ -> 0+` transition
+  available in `inputs/iaea_livechart_gammas.csv`. LiveChart strengths in
+  Weisskopf units are converted with
+  `B(E2) [e^2 b^2] = B(E2) [W.u.] * 0.0594 * A^(4/3) * 1e-4`.
+  The complete released target set contains 428 even-even and five odd-odd
+  nuclei, all with `0+` ground states.
 
 ## External Measurements
 

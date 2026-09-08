@@ -82,13 +82,30 @@ def main() -> None:
         "charge_radius_rows": 3231,
         "charge_radius_measured_oof_rows": 868,
         "charge_radius_open_rows": 2363,
-        "be2_rows": 991,
+        "be2_rows": 831,
         "be2_measured_oof_rows": 433,
-        "be2_open_rows": 558,
+        "be2_open_rows": 398,
     }
     if counts != expected_counts:
         raise RuntimeError(f"Prediction-kind counts changed: {counts}")
-    print(json.dumps({"rms": actual, "counts": counts}, indent=2))
+
+    valid_be2_support = be2_table["ground_state_spin"].eq(0) & be2_table[
+        "ground_state_parity"
+    ].eq(1)
+    if not valid_be2_support.all():
+        raise RuntimeError("B(E2) release contains nuclei without a 0+ ground state.")
+    composition = {
+        "even_even": int(((be2_table["z"] % 2 == 0) & (be2_table["n"] % 2 == 0)).sum()),
+        "odd_odd": int(((be2_table["z"] % 2 == 1) & (be2_table["n"] % 2 == 1)).sum()),
+    }
+    if composition != {"even_even": 809, "odd_odd": 22}:
+        raise RuntimeError(f"B(E2) support composition changed: {composition}")
+    print(
+        json.dumps(
+            {"rms": actual, "counts": counts, "be2_composition": composition},
+            indent=2,
+        )
+    )
     print("All release checks passed.")
 
 

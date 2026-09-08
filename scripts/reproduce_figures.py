@@ -21,6 +21,22 @@ COLORS = {
     "data": "#111111",
 }
 
+REFERENCE_N = {
+    ("radii", 20): 24,
+    ("radii", 28): 33,
+    ("radii", 50): 70,
+    ("radii", 62): 84,
+    ("radii", 80): 113,
+    ("radii", 82): 116,
+    ("be2", 40): 54,
+    ("be2", 50): 68,
+    ("be2", 54): 74,
+    ("be2", 62): 82,
+    ("be2", 84): 118,
+    ("be2", 90): 138,
+    ("be2", 92): 142,
+}
+
 
 def style() -> None:
     plt.rcParams.update(
@@ -41,6 +57,8 @@ def style() -> None:
 def load_tables() -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     radii = pd.read_csv(ROOT / "tables" / "nuclr_charge_radii.csv")
     be2 = pd.read_csv(ROOT / "tables" / "nuclr_be2.csv")
+    if not (be2["ground_state_spin"].eq(0) & be2["ground_state_parity"].eq(1)).all():
+        raise RuntimeError("The released B(E2) table must contain only 0+ ground states.")
     d5 = pd.read_csv(ROOT / "models" / "5dch_predictions.csv")
     bskg3 = pd.read_csv(ROOT / "models" / "bskg3_predictions.csv")
     return radii, be2, d5, bskg3
@@ -65,16 +83,20 @@ def plot_chain(
         prediction = "nuclr_prediction_fm"
         truth = "training_measurement_fm"
         truth_unc = "training_measurement_unc_fm"
-        width = "interval68_half_width_fm"
+        lower = "interval68_lower_fm"
+        upper = "interval68_upper_fm"
         model_value = "charge_radius_fm"
         ylabel = r"$R_{\rm ch}$ [fm]"
+        delta_ylabel = r"$\Delta R_{\rm ch}$ [fm]"
     else:
         prediction = "nuclr_prediction_e2_b2"
         truth = "training_measurement_e2_b2"
         truth_unc = "training_measurement_unc_e2_b2"
-        width = "interval68_half_width_e2_b2"
+        lower = "interval68_lower_e2_b2"
+        upper = "interval68_upper_e2_b2"
         model_value = "be2_down_e2_b2"
         ylabel = r"$B(E2)$ [$e^2{\rm b}^2$]"
+        delta_ylabel = r"$\Delta B(E2)$"
 
     chain = data[data["z"].eq(z)].sort_values("n")
     measured = chain[chain[truth].notna()]
@@ -94,7 +116,12 @@ def plot_chain(
     top.errorbar(
         measured["n"],
         measured[prediction],
-        yerr=measured[width],
+        yerr=np.vstack(
+            [
+                measured[prediction] - measured[lower],
+                measured[upper] - measured[prediction],
+            ]
+        ),
         fmt="s",
         ms=2.8,
         color=COLORS["nuclr"],
@@ -106,7 +133,12 @@ def plot_chain(
     top.errorbar(
         open_points["n"],
         open_points[prediction],
-        yerr=open_points[width],
+        yerr=np.vstack(
+            [
+                open_points[prediction] - open_points[lower],
+                open_points[upper] - open_points[prediction],
+            ]
+        ),
         fmt="s",
         ms=3.0,
         mfc="white",
@@ -118,12 +150,27 @@ def plot_chain(
         zorder=3,
     )
 
+    reference_n = REFERENCE_N[(observable, z)]
+    reference_row = chain[chain["n"].eq(reference_n)]
+    if len(reference_row) != 1:
+        raise RuntimeError(f"Missing NuCLR reference N={reference_n} for Z={z}.")
+    reference_prediction = float(reference_row[prediction].iloc[0])
+    delta.plot(
+        chain["n"],
+        chain[prediction] - reference_prediction,
+        color=COLORS["nuclr"],
+        linewidth=1.15,
+    )
+
     model_specs = [
         (d5, "5DCH", COLORS["5dch"], "--"),
         (bskg3, "BSkG3", COLORS["bskg3"], "-."),
     ]
     for model, label, color, linestyle in model_specs:
         model_chain = model[model["z"].eq(z) & model[model_value].notna()].sort_values("n")
+        model_chain = model_chain[
+            model_chain["n"].between(int(chain["n"].min()), int(chain["n"].max()))
+        ]
         top.plot(
             model_chain["n"],
             model_chain[model_value],
@@ -132,12 +179,14 @@ def plot_chain(
             linewidth=1.0,
             label=label,
         )
-        joined = model_chain[["n", model_value]].merge(
-            chain[["n", prediction]], on="n", how="inner"
+        reference_value = np.interp(
+            reference_n,
+            model_chain["n"].to_numpy(float),
+            model_chain[model_value].to_numpy(float),
         )
         delta.plot(
-            joined["n"],
-            joined[model_value] - joined[prediction],
+            model_chain["n"],
+            model_chain[model_value] - reference_value,
             color=color,
             linestyle=linestyle,
             linewidth=0.95,
@@ -161,9 +210,20 @@ def plot_chain(
     symbol = str(chain["symbol"].dropna().iloc[0]) if len(chain) else f"Z={z}"
     top.set_title(f"{symbol} ($Z={z}$)")
     top.set_ylabel(ylabel)
-    delta.set_ylabel(r"model $-$ NuCLR")
+    delta.set_ylabel(delta_ylabel)
     delta.set_xlabel(r"Neutron number $N$")
     delta.axhline(0.0, color="0.55", linewidth=0.55)
+    delta.axvline(reference_n, color="0.60", linestyle=":", linewidth=0.65)
+    delta.text(
+        0.98,
+        0.88,
+        rf"$N_{{\rm ref}}={reference_n}$",
+        transform=delta.transAxes,
+        ha="right",
+        va="top",
+        color="0.40",
+        fontsize=7.0,
+    )
     decorate(top)
     decorate(delta)
 
