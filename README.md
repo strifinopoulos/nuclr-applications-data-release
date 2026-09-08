@@ -72,6 +72,17 @@ The uncertainty script refits the residual-scale GBMs and checks the reported
 coverage diagnostics and released interval widths using the frozen NuCLR OOF
 predictions in this repository.
 
+The interval reproduction uses the exact assignments in
+`splits/random_folds.csv` and `splits/regional_folds.csv`. It evaluates all 20
+ordered calibration/test rotations in each of five random partitions. Measured
+nuclei receive the median width from their 20 held-out-test fits; unmeasured
+nuclei receive the median width from all 100 fits. The script checks the
+released widths, random-fold coverage, local calibration, and regional
+diagnostics against `tables/uncertainty_validation.csv`.
+
+The figure script reproduces the numerical chain-plot series and writes
+standalone PNGs with the manuscript asset names.
+
 ## Citation
 
 Cite this repository using [CITATION.cff](CITATION.cff) and cite the original
