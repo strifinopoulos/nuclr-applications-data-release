@@ -65,7 +65,9 @@ interval half-width.
 
 - Charge radii are in fm.
 - `B(E2)` values are downward transition strengths in `e^2 b^2`.
-- `training_measurement_*` contains the target table used by NuCLR.
+- `training_measurement_*` contains the target values used by NuCLR, except
+  that the `98Zr` entry contains the corrected ground-state value described
+  above.
 - The six calcium measurements in `external_measurement_*` were absent from
   the frozen training table and are retained separately as external data.
 - The frozen sources do not report a usable uncertainty for 27 of the 433
