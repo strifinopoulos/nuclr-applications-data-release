@@ -22,16 +22,18 @@
   For the 408 retained nuclei covered by this table, the tabulated upward
   strengths and uncertainties are divided by five to obtain downward
   `B(E2; 2+ -> 0+)` values.
-- The remaining 24 released targets use the transition from the lowest listed
+- The remaining 25 training targets use the transition from the lowest listed
   first-`2+` level (including tentative `(2+)` assignments) to the `0+` ground
   state (`end_level_energy = 0`) in `inputs/iaea_livechart_gammas.csv`.
   LiveChart strengths in Weisskopf units are converted with
   `B(E2) [e^2 b^2] = B(E2) [W.u.] * 0.0594 * A^(4/3) * 1e-4`.
-  The complete released target set contains 427 even-even and five odd-odd
+  The complete released target set contains 428 even-even and five odd-odd
   nuclei, all with `0+` ground states.
-  `98Zr` is retained in the frozen LiveChart extract but excluded from the
-  derived release tables because the frozen ensemble had been fine-tuned using
-  its branch to an excited `0+` state rather than its ground-state branch.
+  For `98Zr`, the frozen extraction selected an excited-`0+` branch; the
+  released measurement instead uses the ground-state branch. Its released
+  NuCLR prediction is the four-model OOF aggregate whose target fold excluded
+  `98Zr`. The ensemble was not retrained, so the other fold models retain any
+  residual influence of the original erroneous label.
 
 ## External Measurements
 

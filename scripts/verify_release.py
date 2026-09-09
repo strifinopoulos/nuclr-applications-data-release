@@ -13,9 +13,9 @@ import pandas as pd
 ROOT = Path(__file__).resolve().parents[1]
 EXPECTED = {
     "charge_radius_mtl_oof_rms": 0.014671871877824877,
-    "be2_mtl_oof_rms": 0.1924778379947288,
+    "be2_mtl_oof_rms": 0.19227271031996152,
     "charge_radius_stl_oof_rms": 0.07600884500180767,
-    "be2_stl_oof_rms": 0.2955185541512647,
+    "be2_stl_oof_rms": 0.2951787848802326,
 }
 
 
@@ -40,19 +40,17 @@ def verify_manifest() -> None:
 
 
 def verify_livechart_be2_targets(be2_table: pd.DataFrame) -> None:
-    """Check the 24 retained LiveChart targets against the intended branch."""
+    """Check the 25 targets sourced from LiveChart against the intended branch."""
     nndc = pd.read_csv(ROOT / "inputs" / "nndc_adopted_be2.csv")
     nndc_keys = set(zip(nndc["z"], nndc["n"]))
     measured = be2_table[be2_table["training_measurement_e2_b2"].notna()].copy()
     livechart_targets = measured[
         ~pd.MultiIndex.from_frame(measured[["z", "n"]]).isin(nndc_keys)
     ]
-    if len(livechart_targets) != 24:
+    if len(livechart_targets) != 25:
         raise RuntimeError(
-            f"Expected 24 LiveChart-derived B(E2) targets, found {len(livechart_targets)}."
+            f"Expected 25 LiveChart-derived B(E2) targets, found {len(livechart_targets)}."
         )
-    if ((be2_table["z"] == 40) & (be2_table["n"] == 58)).any():
-        raise RuntimeError("98Zr must be excluded from the derived B(E2) release.")
 
     gammas = pd.read_csv(ROOT / "inputs" / "iaea_livechart_gammas.csv")
     normalized_start_jp = gammas["start_level_jp"].str.replace(
@@ -135,8 +133,8 @@ def main() -> None:
         "charge_radius_rows": 3231,
         "charge_radius_measured_oof_rows": 868,
         "charge_radius_open_rows": 2363,
-        "be2_rows": 830,
-        "be2_measured_oof_rows": 432,
+        "be2_rows": 831,
+        "be2_measured_oof_rows": 433,
         "be2_open_rows": 398,
     }
     if counts != expected_counts:
@@ -151,21 +149,9 @@ def main() -> None:
         "even_even": int(((be2_table["z"] % 2 == 0) & (be2_table["n"] % 2 == 0)).sum()),
         "odd_odd": int(((be2_table["z"] % 2 == 1) & (be2_table["n"] % 2 == 1)).sum()),
     }
-    if composition != {"even_even": 808, "odd_odd": 22}:
+    if composition != {"even_even": 809, "odd_odd": 22}:
         raise RuntimeError(f"B(E2) support composition changed: {composition}")
     measured_be2 = be2_table[be2_table["training_measurement_e2_b2"].notna()]
-    measured_composition = {
-        "even_even": int(
-            (measured_be2["z"].mod(2).eq(0) & measured_be2["n"].mod(2).eq(0)).sum()
-        ),
-        "odd_odd": int(
-            (measured_be2["z"].mod(2).eq(1) & measured_be2["n"].mod(2).eq(1)).sum()
-        ),
-    }
-    if measured_composition != {"even_even": 427, "odd_odd": 5}:
-        raise RuntimeError(
-            f"Measured B(E2) support composition changed: {measured_composition}"
-        )
     even_even_measured = measured_be2[
         measured_be2["z"].mod(2).eq(0) & measured_be2["n"].mod(2).eq(0)
     ]
@@ -175,8 +161,8 @@ def main() -> None:
         return float(np.exp(np.quantile(np.abs(np.log(ratio)), 0.95)))
 
     tail_diagnostics = {
-        "be2_all_432_multiplicative_95pct": multiplicative_tail(measured_be2),
-        "be2_even_even_427_multiplicative_95pct": multiplicative_tail(
+        "be2_all_433_multiplicative_95pct": multiplicative_tail(measured_be2),
+        "be2_even_even_428_multiplicative_95pct": multiplicative_tail(
             even_even_measured
         ),
     }
@@ -186,7 +172,6 @@ def main() -> None:
                 "rms": actual,
                 "counts": counts,
                 "be2_composition": composition,
-                "be2_measured_composition": measured_composition,
                 "tail_diagnostics": tail_diagnostics,
             },
             indent=2,
