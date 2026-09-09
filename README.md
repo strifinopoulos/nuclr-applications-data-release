@@ -54,7 +54,7 @@ measurement has been corrected to the ground-state transition. Its NuCLR
 central prediction remains genuinely out of fold with respect to this label:
 it is the mean of the four models whose target fold excluded `98Zr`. The other
 fold models were fine-tuned using the erroneous label, so any residual effect
-on predictions for neighboring nuclei has not been removed; the ensemble was
+on their predictions for other nuclei has not been removed; the ensemble was
 not retrained.
 
 `nuclr_seed_std_*` records the spread of the corresponding central-prediction
