@@ -37,11 +37,15 @@ REFERENCE_N = {
     ("be2", 92): 142,
 }
 
+Y_LABEL_X = -0.17
+
 
 def style() -> None:
     plt.rcParams.update(
         {
             "font.family": "serif",
+            "font.serif": ["Computer Modern Roman", "DejaVu Serif"],
+            "mathtext.fontset": "cm",
             "font.size": 8.5,
             "axes.titlesize": 9.5,
             "axes.labelsize": 8.5,
@@ -87,7 +91,7 @@ def plot_chain(
         upper = "interval68_upper_fm"
         model_value = "charge_radius_fm"
         ylabel = r"$R_{\rm ch}$ [fm]"
-        delta_ylabel = r"$\Delta R_{\rm ch}$ [fm]"
+        delta_ylabel = r"$\Delta R_{\rm ch}$"
     else:
         prediction = "nuclr_prediction_e2_b2"
         truth = "training_measurement_e2_b2"
@@ -211,18 +215,23 @@ def plot_chain(
     top.set_title(f"{symbol} ($Z={z}$)")
     top.set_ylabel(ylabel)
     delta.set_ylabel(delta_ylabel)
+    top.yaxis.set_label_coords(Y_LABEL_X, 0.5)
+    delta.yaxis.set_label_coords(Y_LABEL_X, 0.5)
     delta.set_xlabel(r"Neutron number $N$")
     delta.axhline(0.0, color="0.55", linewidth=0.55)
     delta.axvline(reference_n, color="0.60", linestyle=":", linewidth=0.65)
     delta.text(
-        0.98,
-        0.88,
-        rf"$N_{{\rm ref}}={reference_n}$",
+        0.97,
+        0.08,
+        rf"$\mathbf{{N}}_{{\mathrm{{ref}}}}={reference_n}$",
         transform=delta.transAxes,
         ha="right",
-        va="top",
-        color="0.40",
-        fontsize=7.0,
+        va="bottom",
+        color="0.32",
+        fontsize=7.2,
+        fontweight="semibold",
+        bbox={"facecolor": "white", "edgecolor": "none", "alpha": 0.68, "pad": 0.4},
+        zorder=7,
     )
     decorate(top)
     decorate(delta)
